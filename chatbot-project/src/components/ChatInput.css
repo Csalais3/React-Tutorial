@@ -13,7 +13,8 @@
     padding: 12px 20px;
     border-radius: 10px;
     border: none;
-    margin-left: 5px
+    margin-left: 5px;
+    cursor: pointer;
 }
 .chat-input{
   padding: 12px 15px;
