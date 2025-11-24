@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<!--
+    For this project, we learn about Components, which are just a piece of the website
+    When building websites, its better to split up the website into pieces so that we can work on a small piece of the website at a time
+-->
+<html>
+  <head>
+    <title>Chatbot</title>
+  </head>
+  <body>
+    <div class="js-container"></div>
+    
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+    <script src="https://unpkg.com/supersimpledev/dayjs.js"></script>
+
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script type="text/babel">
+        // In React, the component must start with capital letter (pascal case) and is denoted by "function", they are completely reusable
+        function ChatInput() {
+            return (
+                <div>
+                    <input /> 
+                    <button> Send </button>
+                </div>
+            );
+             // JSX is more strict than HTML, so everything needs a closer, we can have self closing elements only if there is nothing within the element
+             // We can't return multiple elements normall, so we use the div element
+             // Looks basic now, but we can style it later with CSS
+        }
+
+        // We can clean up our code by using Fragments which allows us to group the elements together wihtout using excess divs
+        function ChatInput2() {
+            return (
+                <>
+                    <input 
+                        placeholder="Send a message to the Chatbot" 
+                        size="30" 
+                    />
+                    <button> 
+                        Send 
+                    </button>
+                </>
+            );
+        }
+        // We add a placeholder by adding the placeholder attribut
+        // we can add another attribute called size to specify how many characters the element can fit
+
+        // We now create a new componenet for the chat messages
+        // We add a props (short for properties) attribute, which contains the attributes that we gave our component (kind of like keyword arguments)
+        function ChatMessage({message, sender}) {
+            // const message = props.message
+            //const sender = props.sender
+
+            //const { message, sender } = props
+            // This is a shortcut for the code above called destructuring, which means that we are extracting the property out of our props object
+            // This can be destructured further by removing the props and just put it in the parameters, this is used a lot in react
+
+            /*
+            if(sender === "robot"){
+                return (
+                <div>
+                    <img src="robot.png" width="50" />
+                    {message}
+                </div>
+            );
+            }
+            */
+    
+            return (
+                <div>
+                    {(sender == "robot") && (
+                        <img src="robot.png" width="50" />
+                        )}
+                    {message}
+                    {(sender === "user") &&(
+                        <img src="user.png" width="50" />
+                    )}
+                </div>
+            );
+
+            // We can use the guard operator (&&) as an if statement within the code to clean up our code and avoid typing the same code
+           
+        }
+        // We have a profile picture and a message, so we add those elements, we add the image by using the html element <img>
+        // To specify the image to use, we add use the attribute src=""
+        // To specify the size of the image, we can use the attribute width=""
+        // We actually use a div element here because we want this to take up an entire line element
+        // We then use an if statement to check who is sending the message to figure out which picture to use
+
+    
+        // We can either do {ChatInput()} or do <ChatInput /> to do the same thing, this is called "Component Syntax"
+        // Component syntax as a nice advantage, which can be used as an HTML element, whihc means that we can create our own html element, and use those to build the website, which is the main idea of react
+        // Since ChatInput is an element, we can also use the self closing element notation
+
+        // We can easily make our code more readable by splitting everything into lines
+        // Its a good practice to use a component to create the app as a component because it gives us the useful features of components
+        // We can create components inside of components
+        function App() {
+            return (
+                <>
+                    <LoginForm />
+                    <ChatInput2 />
+                    <ChatMessage 
+                        message="hello chatbot" 
+                        sender="user" 
+                    />
+                    <ChatMessage 
+                        message="Hello! How can I help you?" 
+                        sender="robot" 
+                    />
+                    <ChatMessage 
+                        message="can you get me todays date?" 
+                        sender="user" 
+                    />
+                    <ChatMessage 
+                        message="Today is September 27" 
+                        sender="robot" 
+                    />
+                    
+                </>
+            );
+        }
+        // We can also do this for our ChatInput, and anywhere that uses div, which cleans up our elements
+        // We can add a placeholder inside our textbox (something that tells us what to type and dissapears as soon as the user starts typing)
+        // We can add our own attribute within our created elements
+
+
+        function Text({ type }){
+            return(
+                <div>
+                    <input 
+                        placeholder = {type}
+                    />
+                </div>
+            );
+        }
+
+        function Buttons(){
+            return(
+                <div>
+                    <button> 
+                        Login
+                    </button>
+                     <button> 
+                        Sign Up
+                    </button>
+                </div>
+            )
+
+        }
+
+        function LoginForm(){
+            return(
+                <>
+                <p>
+                    Hello, welcome to my website!
+                </p>
+                <Text 
+                    type ="Email"
+                />
+                <Text 
+                    type = "Password"
+                />
+                <Buttons /> 
+
+                </>
+            );
+        }
+
+        function ProductDetails({Item, Image, Cost, Discount}){
+            return(
+                <div>
+                    <img src={Image} width={90} />
+                    <p>
+                        {Item}
+                    </p>
+                    {(Discount != 0)?(
+                        <>
+                            <p>
+                                <del>
+                                    Price: ${Cost}
+                                </del>
+                            </p>
+                            <p>
+                                Discount Price: ${Cost - (Cost * Discount)}
+                            </p>
+                        </>
+                    ):(
+                            <p>
+                                Price: ${Cost}
+                            </p>
+                    )}
+                    <button>
+                        Add to Cart
+                    </button>
+                </div>
+            );
+        }
+
+        const div = (
+            <div>
+                <ChatInput />
+            </div>
+        );
+
+        function App2() {
+            return(
+                <>
+                    <ProductDetails 
+                        Item="Cotton socks" 
+                        Image="Images/cotton-socks.png"
+                        Cost={10.90}
+                        Discount={.25}
+                    />
+                    <ProductDetails 
+                        Item="Tennis balls" 
+                        Image="Images/tennis-balls.png"
+                        Cost={6.00} 
+                        Discount={.5}
+                    />
+                    <ProductDetails 
+                        Item="Plain T-Shirt" 
+                        Image="Images/plain-t-shirt.png"
+                        Cost={7.99} 
+                        Discount={0}
+                    />
+                </>
+            );
+        }
+
+        const container = document.querySelector('.js-container')
+        ReactDOM.createRoot(container).render(<App2 />) // We then give the element App using our component in the paramters
+    </script>
+  </body>
+</html>
+
+<!--This is the minimum amount of code that is needed to set up react -->

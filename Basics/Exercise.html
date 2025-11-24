@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Exercise</title>
+    <style>
+        .light-switch-on{
+            background-color: rgb(25, 135, 84);
+            color: white;
+            padding: 7px 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .light-switch-off{
+            background-color: rgb(220, 53, 69);
+            color: white;
+            padding: 7px 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .buttons-sign{
+            background-color: rgb(0, 123, 255);
+            color: white;
+            padding: 7px 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-right: 5px;
+        }
+        .text-box-stuff{
+            padding: 10px 10px;
+            border-radius: 5px;
+            border-width: 1px;
+            margin-bottom: 10px;
+            width: 200px;
+        }
+        .show-button{
+            margin-left: 10px
+        }
+    </style>
+  </head>
+  <body>
+    <div class="js-container"></div>
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+    <script src="https://unpkg.com/supersimpledev/chatbot.js"></script>
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script src="https://unpkg.com/supersimpledev/dayjs.js"></script>
+    <script type="text/babel">
+
+        function Switch({ isOn, setIsOn}){
+
+            function flipSwitch(){
+                if (isOn){
+                    setIsOn(0);
+                }
+                else{
+                    setIsOn(1);
+                }
+
+            }
+
+            return(
+                <button 
+                    onClick={flipSwitch}
+                    className={isOn? "light-switch-on":"light-switch-off"}
+                    > {isOn == 1 ? "ON" : "OFF"} </button>
+            );
+        }
+        function App(){
+            const [isOn, setIsOn] = React.useState(0);
+
+            return(
+                <>
+                    <Switch
+                        isOn={isOn}
+                        setIsOn={setIsOn}
+                    />
+                </>
+            );
+        }
+
+        function TextBox({showPassword, setShowPassword}){
+
+            function clickShow() {
+                if (showPassword){
+                    setShowPassword(0);
+                }
+                else{
+                    setShowPassword(1);
+                }
+            }
+
+            return(
+                <div>
+                    <input 
+                        placeholder="Email"
+                        className="text-box-stuff"
+                    />
+                    <div>
+                        <input 
+                            type={(showPassword)? "text":"password"}
+                            placeholder="Password"
+                            className="text-box-stuff"
+                        />
+                        <button
+                        onClick={clickShow}
+                        className="show-button"> {showPassword? "Hide" : "Show"} </button>
+                    </div>
+                </div>
+            );
+        }
+
+        function RegistrationButtons(){
+
+            return(
+                <div>
+                    <button className="buttons-sign"> Login </button>
+                    <button className="buttons-sign"> Sign Up </button>
+                </div>
+            );
+        }
+
+        function App2(){
+            const [showPassword, setShowPassword] = React.useState(0);
+            const [time, setTime] = React.useState(dayjs().format("HH : mm : ss"));
+           
+            React.useEffect(() => {
+                setInterval(() => {
+                    setTime(dayjs().format("HH:mm:ss"));
+                }, 1000)
+            }, [])
+           
+            return(
+                <>
+                    <p>
+                        Hello, welcome to my website! Current time: {time}
+                    </p>
+                    <TextBox
+                        showPassword={showPassword}
+                        setShowPassword={setShowPassword}
+                    />
+                    <RegistrationButtons />
+                </>
+            );
+        }
+
+        const container = document.querySelector('.js-container');
+        ReactDOM.createRoot(container).render(<App2 />);
+    </script>
+  </body>
+</html>
+

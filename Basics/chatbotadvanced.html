@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chatbot</title>
+    <!--We can write CSS code inside of the style element-->
+    <!--Below we have the CSS Selector and the CSS Style, with the CSS propery and CSS value, this changes all of the buttons in the website with the color green-->
+    <!--"Background" color is for the background, "color" is for the text, "padding" is the space inside an element (length width), "margin" is the space on the outside of the element (left, right, up, down) (space in pixels)-->
+    <!--"Border" allows us to have borders or not, "Border-radius" allows us to have rounder borders, "font-size" allows us to change the size of the text "border-width" allows us to change the thickness of the border-->
+    <!--Flexbox allows us to have a flexible layout (how the elements are positioned). To use Flexbox you need to: 1) Create a container around elements, 2) Add display: flex; to container, 3) Use Flexbox Features, by default, flexbox elements will stretch to fit-->
+    <!--Flexbox Features: flex-grow (allows the flexbox to grow and take up the remaining space), max-width allows us to restrict the width to not be more than a given amount of pixels -->
+    <!--We can use margin-lef and margin-right to center our elements by using auto, "justify-content" allows us to keep something as far to the left/right as possible-->
+    <!--We can style the font of the text by using "font-family", generally, we want the entire website to use the same font so we make the entire body a class with the same font, we can overwrite this inside specific text containers if needed--> 
+    <!--vh stands for "viewport height", which is just the height of the browser, to get a scrollbar for the case where we have too many messages, instead of just pushing the page down, we can use "overflow" to specify what to do when the text overflows-->   
+    <!--By default, flexbox positions elements horizontally, but to position elements vertically, we use flexbox feature "flex-direction", which is row by default, but we can change to column-->
+    <!--We can get rid of the scroll bar by using  scrollbar-width: none, we can also add autoscrolling by using hooks, which allow us to insert react features into our component (e.g react.useState is a hook)-->
+    <!--React.useEffect() allows us to run code after the element has been created-->
+    <style>
+        body{
+            font-family: Arial;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .send-button{
+            background-color: rgb(25, 135, 84);
+            color: white;
+            padding: 12px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        
+        .chat-input{
+            padding: 12px 15px;
+            border-width: 1px; 
+            border-radius: 10px;
+            font-size: 15px;
+
+            flex-grow: 1;
+        }
+
+        .chat-input-container{
+            display: flex;
+            margin-bottom: 60px;
+        }
+
+        .app-container{
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-message-user{
+            display: flex;
+            justify-content: right;
+            align-items: start;
+            margin-top: 20px;
+
+        }
+
+        .chat-message-robot{
+            display: flex;
+            justify-content: left;
+            align-items: start;
+        }
+
+        .chat-message-text{
+            background-color: rgb(238, 238, 238);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-right: 10px;
+            margin-left: 10px;
+            margin-bottom: 20px;
+            max-width: 300px;
+        }
+
+        .chat-message-profile{
+            width: 45px;
+        }
+
+        .chat-messages-container{
+            flex-grow: 1;
+            margin-top: 20px;
+            overflow: scroll;
+            scrollbar-width: none;
+        }
+        .starting-message-text{
+            color: rgb(120, 120, 120);
+            text-align: center;
+        }
+        .gif-image{
+            height: 40px;
+            margin: -15px;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="js-container"></div>
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+    <script src="https://unpkg.com/supersimpledev/chatbot.js"></script>
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script type="text/babel">
+        /*
+            CSS is a language that is used to change the appearance of the website
+        */
+
+        function ChatInput({chatMessages, setChatMessages, isLoading, setIsLoading}) {
+            const [inputText, setInputText] = React.useState("");
+
+            function saveInputText(event){
+                setInputText(event.target.value); 
+            }
+
+            async function sendMessage(event){
+                console.log(event.key)
+
+                if ((event.key == "Enter" || event.key == undefined) && isLoading == 0){
+                    setInputText("");
+                    setIsLoading(1)
+                    const newChatMessages = [
+                    ...chatMessages,
+                    {
+                        message: inputText,
+                        sender: "user",
+                        id: crypto.randomUUID()
+                    }];
+                    setChatMessages(newChatMessages);
+
+                    setChatMessages([
+                        ...newChatMessages, 
+                        {
+                            message: <img src="Images/loading-spinner.gif"
+                                    className="gif-image"></img>,
+                            sender: "robot",
+                            id: crypto.randomUUID()
+                        }
+                    ]);
+
+                    const response = await Chatbot.getResponseAsync(inputText)
+                    setChatMessages([
+                    ...newChatMessages,
+                    {
+                        message: response,
+                        sender: "robot",
+                        id: crypto.randomUUID()
+                    }])
+                }
+                            
+                if (event.key == "Escape"){
+                    setInputText("")
+                }
+
+                setIsLoading(0)
+            }
+            
+            // We cant style fragments with CSS, so we switch it to a div element, which is something that we can style
+            return (
+                <div className="chat-input-container">
+                    <input 
+                        placeholder="Send a message to the Chatbot" 
+                        size="30" 
+                        onChange={saveInputText}
+                        onKeyDown={sendMessage}
+                        value={inputText}
+                        className="chat-input"
+                    />
+                    <button 
+                        onClick={sendMessage}
+                        className="send-button"
+                    > Send </button>
+                </div>
+            );
+            // To style a specific elemenet, we can add a prop called className="", which allows us to style that element in specific
+        }
+
+        function ChatMessage({message, sender}) {
+            // We can use the tenary operator to change the className of the class for styling purposes
+            // We put the text inside a container to be able to stylize it
+            return (
+                <div className={
+                    sender === "user" 
+                    ? "chat-message-user"
+                    :"chat-message-robot"
+                }>
+                    {(sender === "robot") && (
+                        <img src="Images/robot.png" 
+                        className="chat-message-profile" />
+                    )}
+                    <div className="chat-message-text">
+                        {message}
+                    </div>
+                    {(sender === "user") && (
+                        <img src="Images\user.png" 
+                        className="chat-message-profile"/>
+                    )}
+                </div>
+            );           
+        }
+
+        function useAutoScroll(dependencies){
+            const containerRef = React.useRef(null); // useRef allows us to automatically save a HTML element, this creates a ref (container with special react features)
+            // we give the ref null so that its empty
+            // We can use refs for anything that we want to update while the website is running and display the change
+
+            React.useEffect(() => {
+                const containerElem = containerRef.current;
+                if (containerElem) {
+                    containerElem.scrollTop = containerElem.scrollHeight;
+                }
+            }, dependencies); // React will run whatever function is given after the element is created
+            // The array will conrol when useEffect is ran, so an empty array will only run when the component is created, this is called a Dependency Array
+            // It is good practice to give useEffect a dependency array to control behavior
+
+            return containerRef;
+
+        }
+
+        function ChatMessages({ chatMessages}){
+            const chatMessagesRef = useAutoScroll([chatMessages]);
+
+            return(
+                <div 
+                className="chat-messages-container"
+                ref={chatMessagesRef}>
+                    <p className="starting-message-text">
+                        {chatMessages.length === 0 ? "Welcome to the chatbot project! Send a message using the textbox below.":""}
+                    </p>
+                    {chatMessages.map((chatMessage) => {
+                        return(
+                                <ChatMessage 
+                                    message={chatMessage.message} 
+                                    sender={chatMessage.sender}
+                                    key={chatMessage.id}
+                                />
+                            );
+                    })}
+                </div>
+
+            );
+
+        }
+
+        
+        
+        function App() {
+            const [chatMessages, setChatMessages] = React.useState([]);
+            const [isLoading, setIsLoading] = React.useState(0);
+
+            return (
+                <div className="app-container">
+                    <ChatMessages 
+                        chatMessages={chatMessages}
+                    /> 
+                    <ChatInput 
+                        chatMessages={chatMessages}
+                        setChatMessages={setChatMessages}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                    />
+                </div>
+            );
+        }   
+
+        const container = document.querySelector('.js-container')
+        ReactDOM.createRoot(container).render(<App />)
+    </script>
+  </body>
+</html>
+

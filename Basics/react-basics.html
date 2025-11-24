@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+ React is an external library that helps us create websites easier 
+ 1) React is an external library
+ - Html code makes websites 
+ - Htlm <script> element help us load JavaScript onto the website
+ - We can also run JavaScript by saving JavaScript code in a file then import it into our main file by adding the scr attribute to load the code form the file
+ - The script element can load code from anywhere on the internet (External Libary: Code that someone else wrote outside of our library)
+ - This means that React is code that someone else wrote outside of our computer, we can load this code on our website and use it
+
+ 2) React helps us create websites easier
+
+ The <html> <head> <body> structure is called the "HTML Structure", a standard structure followed when writing in html
+ DOCTYPE! html tell the computer to use a modern version of html
+ The html element represents a website, so all the code for the website 
+
+ Each website is split into two sections
+ Head: anything that you dont want visible inside of the page
+ Body: contains things that are visible inside of the page, we put scripts at the end of the body to load all of the html elements firse
+-->
+<html>
+  <head>
+    <title>React Basics</title>
+  </head>
+  <body>
+    <!-- This is a container that we give to react to keep things isolated -->
+    <div class="js-container"></div>
+    
+    <!-- This is an example of an external library-->
+    <!-- <script src= "https://unpkg.com/supersimpledev@8.6.4/external-library.js"> </script>
+    -->
+
+    <!-- These Two URLs load react into our website, there are several types of react libraries (react: Shared Features, react-dom: For websites, react-native: for apps)-->
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+    <script src="https://unpkg.com/supersimpledev/dayjs.js"></script>
+
+    <!-- This is another external library called Bable, which is a JavaScript compiler, translating our react language to JS.
+         We are technically using a enhanced version of JS called JSX which is the same as JS but we can type HTML directly into the code 
+         To use Babel, we have to first load the Babel external library, then when we want to add an attribute to the script element called type="text/babel" -->
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script type="text/babel">
+      // Example of HTML code inisde the JSX code
+      const button = <button> hello </button>; // This code creates a new button element inside of our JS as a variable
+      // In order to use this JSX, we must translate it to JS, which is what our Babel external library does, so that our web browser can understand it
+      const paragraph = <p>paragraph of text</p> // HTML code to create a paragraph of text
+
+
+      // These two lines of code set up react
+      const container = document.querySelector('.js-container'); 
+      // We are getting an html element from our website and putting it into JavaScript
+      // Gives a Document Object, which is a combined version of JS and HTML, which allows them to interact with eachother (DOM Documetn Object Model)
+      // We tell which html element we want from the website, looking for a class, then save it inside a variable
+
+      // ReactDOM.createRoot(container).render('Welcome to SuperSimpleDev React Course');
+      // This sets up react by giving it a html element, which acts a container, where each element created in react is going to be displayed into the element of html as a container, keeping everything organized and isolated (nothing outside can affect anything inside)
+      // .render allows us to display something within the container, with the contents inside of the () specify what should be displayed
+
+      // We can also diplay html elements inside the container, we give the button html element to the render function for example
+      //ReactDOM.createRoot(container).render(button);
+      //ReactDOM.createRoot(container).render(paragraph);
+
+      // We can't give render multiple elements or save multiple elements in a single varibale and then render it
+      // A div element is a container to contain multiple elements (useful for containing all our react elements)
+      const cost = 0
+      const price = 10
+      const root = ReactDOM.createRoot(container);
+
+      setInterval(() => {
+        const div = (<div>
+        <p> My name is Christian! Today is {dayjs().format('MMMM D, YYYY')}</p>
+        <p> The current time is {dayjs().format('HH : mm : ss')}</p>
+        <button>Good Job!</button>
+
+        <p> Cotton Socks </p>
+        <p> Price: ${price}</p>
+        <button>Add to Cart</button>
+        <p> Product cost: {price * cost}</p>
+        </div>); // The {} gives us the ablility to add JS code within our jsx element (string interpolation)
+
+        root.render(div)
+
+      }, 1000);
+    
+    </script>
+  </body>
+</html>
+
+<!--This is the minimum amount of code that is needed to set up react -->

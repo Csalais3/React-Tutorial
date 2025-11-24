@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chatbot</title>
+  </head>
+  <body>
+    <div class="js-container"></div>
+    
+    <script src="https://unpkg.com/supersimpledev/react.js"></script>
+    <script src="https://unpkg.com/supersimpledev/react-dom.js"></script>
+    <script src="https://unpkg.com/supersimpledev/chatbot.js"></script>
+
+    <script src="https://unpkg.com/supersimpledev/babel.js"></script>
+    <script type="text/babel">
+
+        // The best practice is to use react to take in inputs, since it is the one running the website
+        // The onChange event detects when the textbox changes
+        function ChatInput({chatMessages, setChatMessages, isLoading, setIsLoading}) {
+            const [inputText, setInputText] = React.useState(""); // We can actually set up the text change as a state to update our html
+
+            function saveInputText(event){
+                setInputText(event.target.value); // this gives us the element that changed, in the case of the text box, its what we typed and saves it
+            }
+
+            async function sendMessage(event){
+                console.log(event.key)
+
+                if ((event.key == "Enter" || event.key == undefined) && isLoading == 0){
+                    setIsLoading(1)
+                    const newChatMessages = [
+                    ...chatMessages,
+                    {
+                        message: inputText,
+                        sender: "user",
+                        id: crypto.randomUUID()
+                    }];
+                    setChatMessages(newChatMessages);
+
+                    setChatMessages([
+                        ...newChatMessages, 
+                        {
+                            message: "Loading...",
+                            sender: "robot",
+                            id: crypto.randomUUID()
+                        }
+                    ]);
+
+                    const response = await Chatbot.getResponseAsync(inputText)
+                    setChatMessages([
+                    ...newChatMessages,
+                    {
+                        message: response,
+                        sender: "robot",
+                        id: crypto.randomUUID()
+                    }])
+                    setInputText("");
+                    setIsLoading(0)
+
+                }
+                
+                // In react, the state only updates when the code is finished
+            
+                if (event.key == "Escape"){
+                    setInputText("")
+                }
+
+                
+                // This is called a controlled input, by changing the value of the text as soon as we send the message
+            }
+
+            return (
+                <>
+                    <input 
+                        placeholder="Send a message to the Chatbot" 
+                        size="30" 
+                        onChange={saveInputText}
+                        onKeyDown={sendMessage}
+                        value={inputText}
+                    />
+                    <button onClick={sendMessage}> 
+                        Send 
+                    </button>
+                </>
+            );
+        }
+
+        function ChatMessage({message, sender}) {
+    
+            return (
+                <div>
+                    {(sender == "robot") && (
+                        <img src="Images/robot.png" width="50" />
+                        )}
+                    {message}
+                    {(sender === "user") &&(
+                        <img src="Images\user.png" width="50" />
+                    )}
+                </div>
+            );           
+        }
+
+        // We can group everything together into a chatmessage component
+        // A regular component will never update the html when its updated, we can covert this into a state by using react
+        function ChatMessages({ chatMessages }){
+            /*
+                We make an array of chatmessages, and create an object within this array that contains all of the information of these chat messages
+                We add a unique id to differenciate everyone
+                
+                const [chatMessages, setChatMessages] = array // this is a shortcut for the code below, where its like destructuring but for arrays
+                In array destructuring, the order will always matter
+            
+                const chatMessages = array[0]; // This will give us the current value/data that is in the array
+                const setChatMessages = array[1]; // This is a function that lets us update the data, we shouldnt update the data directly, only use the function given here because it tells react to update the html
+                This ^ is also called the updater function, which replaces the entire array
+                In react, we should not modify the data directly, only through copies then updating it, this makes things way more efficient
+
+            
+                This lets us go through each element of an array, and turn it into a new valeu
+                Arrow function works the same way as a function, but its shorter
+                We can save this as varibable
+                
+                const chatMessageComponents = chatMessage.map((chatMessage) => {
+                    return(
+                        <ChatMessage 
+                            message={chatMessage.message} 
+                            sender={chatMessage.sender}
+                        />
+                    );
+                });
+            */
+            
+
+            function sendMessage() {
+                setChatMessages([
+                    ...chatMessages, 
+                    {
+                        message: "test",
+                        sender: "user",
+                        id: crypto.randomUUID()
+                    }
+                ]);
+                // We can use the spread value, which takes all of the values in the array and copying them into the new array
+                //Adds an element to the end of the array
+            }
+
+            /*
+                State is essentially data that is connected to the HTML, when we update this data, it will update the HTML
+                When we want to convert data into a state, we use React.useState, this will an array of 2 elements:
+                - The first element [0] is the original array of the data,
+                - The second element [1] is the updater function that replaces the entire array
+            */
+            return(
+                <>
+                    {chatMessages.map((chatMessage) => {
+                        return(
+                                <ChatMessage 
+                                    message={chatMessage.message} 
+                                    sender={chatMessage.sender}
+                                    key={chatMessage.id}
+                                />
+                            );
+                    })}
+                </>
+
+            );
+
+        }
+        
+        
+        // Instead of manually adding a new chat message when we need one, we can use JavaScript ot generate these componets
+        /*
+            This can be done in 2 steps
+            1) Save the data, we can use a variable to store this
+            2) Remapping the data into the elements, creating them dynamically
+        */
+        function App() {
+            // Use use useState to convert the data to a state, this returns an array so we save it as variable
+            const [chatMessages, setChatMessages] = React.useState([{ // We can go one step further and do it from the first instance
+                message: "hello chatbot",
+                sender: "user",
+                id: "id1"
+            }, {
+                message: "Hello! How can I help you?",
+                sender: "robot",
+                id: "id2"
+            }, {
+                message: "can you get me todays date?",
+                sender: "user",
+                id: "id3"
+            }, {
+                message: "Today is September 27",
+                sender: "robot",
+                id: "id4"
+            }]);
+            const [isLoading, setIsLoading] = React.useState(0)
+            // By moving the state from where it was at to the App is called "pushing the state up"
+
+            // We can now remove all of the ChatMessage Components
+            // As a shortcut we can put the mapping directly into the return brackets
+            // We should give each component a key to help React track changes in the array
+            return (
+                <>
+                    <ChatInput 
+                        chatMessages={chatMessages}
+                        setChatMessages={setChatMessages}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                    />
+                    <ChatMessages 
+                        chatMessages={chatMessages}
+                    /> 
+                </>
+            );
+            // The onClick attribute allows us to add functionality to the button when we click This is called an event handler, Event={EventHandler}, each event uses camelCase
+            // We dont run the function, we just give the function directly to onClick
+            // The naming convention used in react documentation is to keep the name of the prop and the data the same keepign things simple and consistent
+        }   
+
+        function Clicker({ times, setTimes, buttonRef}){
+
+            function countClicks(){
+                setTimes(times + 1)
+                times == 0 ? console.log("Clicked") : console.log("Clicked again") 
+            }
+            
+
+            return(
+                <>
+                    {(times == 1)?(
+                        <button onClick={countClicks}
+                            ref={buttonRef}>
+                            Clicked {times} time
+                        </button>):
+                        (<button onClick={countClicks}
+                            ref={buttonRef}>
+                            Clicked {times} times
+                        </button>)}
+                </>
+                    );
+        }
+
+        function Reset( { setTimes } ){
+
+            function resetClicks(){
+                setTimes(0)
+                console.log("Reset!")
+            }
+            
+            return(
+                <>  
+                    <button onClick={resetClicks}>Reset</button>
+                </>
+            );
+        }
+        
+        function NameBox( {name, setName} ){
+            
+            function typeName(event){
+                setName(event.target.value);
+            }
+            function resetName(){
+                setName("");
+            }
+            function giveExampleName(){
+                setName("Alice");
+            }
+            
+            return(
+                <div>
+                    <input 
+                        placeholder="Type a name here" 
+                        onChange={typeName}
+                        value= {name}
+                    />
+                    <button onClick={resetName}>Reset</button>
+                    <button>Example</button>
+                </div>
+            );
+        }
+
+        function App2(){
+            const [times, setTimes] = React.useState(0);
+            const [name, setName] = React.useState("");
+            const buttonRef = React.useRef();
+ 
+            function autoClick(){
+                setInterval(() => {
+                    const buttonElem = buttonRef.current
+                    if (buttonElem){
+                        buttonElem.click()
+                    }
+                }, 100);
+            }
+
+            return (
+                <> 
+                    <NameBox 
+                        name = {name}
+                        setName={setName}
+                    />
+                    <p> Hello {name}!</p>
+                    <Clicker
+                        times={times}
+                        setTimes={setTimes} 
+                        buttonRef={buttonRef}
+                    />
+                    <Reset
+                        setTimes = {setTimes}
+                    />
+                    <button onClick={autoClick}> 
+                        Auto Click
+                    </button>
+                </>
+            );
+        }
+
+        const container = document.querySelector('.js-container');
+        ReactDOM.createRoot(container).render(<App2 />); // We then give the element App using our component in the paramters
+    </script>
+  </body>
+</html>
+
+<!--This is the minimum amount of code that is needed to set up react -->
