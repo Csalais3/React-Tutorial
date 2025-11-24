@@ -1,6 +1,8 @@
 import "./header.css";
 import "./HomePage.css";
 
+// Routing allows us to use multiple pages in react by using 1 HTML File
+
 export function HomePage(){
     return(
         <>
