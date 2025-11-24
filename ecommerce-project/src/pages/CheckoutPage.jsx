@@ -3,7 +3,7 @@ import "./CheckoutPage.css";
 
 export function CheckoutPage() {
     return (
-        <>
+        <>        
             <title>Checkout</title>
 
             <div className="checkout-header">
