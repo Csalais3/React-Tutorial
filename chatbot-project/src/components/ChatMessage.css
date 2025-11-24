@@ -34,3 +34,7 @@
   height: 40px;
   margin: -15px;
 }
+.chat-message-date{
+  color: rgb(120, 120, 120);
+  margin-top: 5px
+}

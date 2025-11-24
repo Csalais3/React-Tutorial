@@ -51,6 +51,11 @@ export function ChatInput({chatMessages, setChatMessages, isLoading, setIsLoadin
 
       setIsLoading(0)
   }
+
+  function clearMessages(){
+    setChatMessages([]);
+    localStorage.setItem('messages', JSON.stringify([]));
+  }
   
   // We cant style fragments with CSS, so we switch it to a div element, which is something that we can style
   return (
@@ -67,6 +72,11 @@ export function ChatInput({chatMessages, setChatMessages, isLoading, setIsLoadin
               onClick={sendMessage}
               className="send-button"
           > Send </button>
+          <button
+            onClick={clearMessages}
+            className="clear-button">
+            Clear
+          </button>
       </div>
   );
   // To style a specific elemenet, we can add a prop called className="", which allows us to style that element in specific

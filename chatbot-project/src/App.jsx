@@ -1,4 +1,4 @@
-import { useState } from 'react'; //by Convention, we import from packages, then files, then images, then APP.css
+import { useState, useEffect } from 'react'; //by Convention, we import from packages, then files, then images, then APP.css
 import { ChatInput } from "./components/ChatInput.jsx";
 import ChatMessages from "./components/ChatMessages.jsx"
 import './App.css';
@@ -6,8 +6,12 @@ import './App.css';
 // A best practice is to seperate each component into its own file
 // The best practice is to lead external libraries from node_modules instead of using a <script> tag
 function App() {
-  const [chatMessages, setChatMessages] = useState([]);
+  const [chatMessages, setChatMessages] = useState(JSON.parse(localStorage.getItem("messages")) || []);
   const [isLoading, setIsLoading] = useState(0);
+
+  useEffect(() => {
+    localStorage.setItem('messages', JSON.stringify(chatMessages))
+  }, [chatMessages]);
 
   return (
       <div className="app-container">
